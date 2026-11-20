@@ -1,0 +1,97 @@
+[
+  {
+    "law_id": "L1",
+    "law_name": "Labor Standards Act (勞動基準法)",
+    "domain": "labor",
+    "jurisdiction": "Taiwan (R.O.C.)",
+    "effective_date": "2024-06-01",
+    "source": "MOJ Laws & Regulations Database (law.moj.gov.tw)",
+    "articles": [
+      {
+        "article_id": "L1_Art11",
+        "article_number": "Article 11",
+        "text": "An employer shall not terminate a labor contract with advance notice unless one of the following statutory conditions occurs: (1) business suspension or transfer; (2) operating losses or business contraction; (3) force majeure suspending work for over one month; (4) change in business nature necessitating workforce reduction with no suitable reassignment; or (5) a worker is clearly incompetent for the assigned duties."
+      },
+      {
+        "article_id": "L1_Art12",
+        "article_number": "Article 12",
+        "text": "An employer may terminate a labor contract without advance notice or severance pay where a worker commits gross misconduct, serious breach of work rules, violence, intentional damage to company property, or unexcused absence for three consecutive days or six days within one month."
+      },
+      {
+        "article_id": "L1_Art16",
+        "article_number": "Article 16",
+        "text": "When terminating a labor contract pursuant to Article 11, the employer must provide statutory advance notice of 10 days (3 months to 1 year service), 20 days (1 to 3 years service), or 30 days (over 3 years service), or pay wages in lieu of notice."
+      },
+      {
+        "article_id": "L1_Art59",
+        "article_number": "Article 59",
+        "text": "Where a worker suffers death, disability, occupational injury, or illness arising out of employment, the employer shall provide occupational accident compensation covering necessary medical expenses, original wage compensation during medical recovery, disability compensation, and survivor benefits."
+      }
+    ]
+  },
+  {
+    "law_id": "L2",
+    "law_name": "Act of Gender Equality in Employment (性別平等工作法)",
+    "domain": "labor",
+    "jurisdiction": "Taiwan (R.O.C.)",
+    "effective_date": "2024-06-01",
+    "source": "MOJ Laws & Regulations Database (law.moj.gov.tw)",
+    "articles": [
+      {
+        "article_id": "L2_Art10",
+        "article_number": "Article 10",
+        "text": "Employers shall not discriminate against employees because of gender or sexual orientation in paying wages. Employees shall receive equal pay for equal work or equal value; however, differentials based on seniority, reward/discipline systems, performance, or other non-gender justifiable grounds are permissible."
+      },
+      {
+        "article_id": "L2_Art15",
+        "article_number": "Article 15",
+        "text": "Employers shall grant maternity leave of eight weeks before and after childbirth, miscarriage leave according to gestation period, prenatal checkup leave, and paternity accompaniment leave of seven days with pay."
+      }
+    ]
+  },
+  {
+    "law_id": "L3",
+    "law_name": "Labor Occupational Accident Insurance and Protection Act (勞工職業災害保險及保護法)",
+    "domain": "insurance",
+    "jurisdiction": "Taiwan (R.O.C.)",
+    "effective_date": "2024-06-01",
+    "source": "MOJ Laws & Regulations Database (law.moj.gov.tw)",
+    "articles": [
+      {
+        "article_id": "L3_Art6",
+        "article_number": "Article 6",
+        "text": "Workers aged 15 or older employed by registered business entities shall be mandatorily enrolled in labor occupational accident insurance as insured persons from the first day of employment regardless of employer headcount."
+      },
+      {
+        "article_id": "L3_Art42",
+        "article_number": "Article 42",
+        "text": "An insured person unable to work due to occupational injury or disease and receiving medical treatment without full original wages is eligible for injury and sickness benefits starting from the fourth day of incapacity, calculated at 70% of average monthly insured salary for the first two months and 50% thereafter up to two years."
+      }
+    ]
+  },
+  {
+    "law_id": "L4",
+    "law_name": "Financial Consumer Protection Act (金融消費者保護法)",
+    "domain": "financial",
+    "jurisdiction": "Taiwan (R.O.C.)",
+    "effective_date": "2024-06-01",
+    "source": "MOJ Laws & Regulations Database (law.moj.gov.tw)",
+    "articles": [
+      {
+        "article_id": "L4_Art9",
+        "article_number": "Article 9",
+        "text": "Before entering into a contract to provide financial products or services, a financial services enterprise shall fully understand the relevant information of the financial consumer to ensure suitability of the product or service (Know Your Customer / Suitability obligation)."
+      },
+      {
+        "article_id": "L4_Art10",
+        "article_number": "Article 10",
+        "text": "Before concluding a contract for financial products or services, a financial services enterprise shall clearly explain material contractual contents and fully disclose potential investment risks in an understandable manner, retaining verifiable records."
+      },
+      {
+        "article_id": "L4_Art11",
+        "article_number": "Article 11",
+        "text": "Where a financial services enterprise breaches Articles 9 or 10 and causes damages to a financial consumer, it shall be liable for compensatory damages unless it proves that the breach was not attributable to its intent or negligence."
+      }
+    ]
+  }
+]

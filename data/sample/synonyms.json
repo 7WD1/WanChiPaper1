@@ -1,0 +1,10 @@
+{
+  "fire": ["terminate", "dismiss", "lay off", "discharge", "termination of labor contract"],
+  "sacked": ["terminate", "dismiss", "termination of labor contract"],
+  "hurt on the job": ["workplace injury", "occupational accident", "industrial injury"],
+  "work insurance": ["labor occupational accident insurance", "occupational injury benefit"],
+  "pay gap": ["wage discrimination", "equal pay for equal work"],
+  "probation": ["trial period", "probationary employment"],
+  "risk profile": ["KYC", "suitability assessment", "know your customer"],
+  "downside loss": ["investment risk disclosure", "material contractual risk"]
+}

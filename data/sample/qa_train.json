@@ -1,0 +1,74 @@
+[
+  {
+    "qa_id": "QA_001",
+    "domain": "labor",
+    "question": "Can a company fire an employee at will during probation without any valid reason or notice?",
+    "answer": "According to Article 11 and Article 16 of the Labor Standards Act, an employer cannot dismiss a probationary worker arbitrarily at will; termination must satisfy statutory grounds such as demonstrable incompetence and follow advance notice or severance obligations.",
+    "positive_articles": ["L1_Art11", "L1_Art16"],
+    "triples": [
+      ["fire during probation", "maps_to_concept", "termination of labor contract"],
+      ["termination of labor contract", "governed_by", "L1_Art11"],
+      ["advance notice period", "governed_by", "L1_Art16"]
+    ]
+  },
+  {
+    "qa_id": "QA_002",
+    "domain": "labor",
+    "question": "When can an employer immediately let go of a worker without severance pay for serious misconduct?",
+    "answer": "According to Article 12 of the Labor Standards Act, immediate termination without advance notice or severance pay is only allowed for enumerated serious breaches such as gross violation of work rules or three consecutive days of unexcused absence.",
+    "positive_articles": ["L1_Art12"],
+    "triples": [
+      ["immediate dismissal without severance", "maps_to_concept", "disciplinary termination"],
+      ["disciplinary termination", "governed_by", "L1_Art12"]
+    ]
+  },
+  {
+    "qa_id": "QA_003",
+    "domain": "labor",
+    "question": "Is it legal for a company to pay female engineers less than male peers doing the exact same job?",
+    "answer": "According to Article 10 of the Act of Gender Equality in Employment, employers are prohibited from gender-based wage discrimination and must provide equal pay for equal work or work of equal value.",
+    "positive_articles": ["L2_Art10"],
+    "triples": [
+      ["unequal salary by gender", "maps_to_concept", "wage discrimination"],
+      ["wage discrimination", "prohibited_by", "L2_Art10"]
+    ]
+  },
+  {
+    "qa_id": "QA_004",
+    "domain": "insurance",
+    "question": "I got hurt on the job and cannot work during hospital recovery; what work insurance compensation applies?",
+    "answer": "According to Article 59 of the Labor Standards Act and Article 42 of the Labor Occupational Accident Insurance and Protection Act, injured workers receive medical coverage and wage-replacement injury benefits starting from the fourth day of incapacity, with mandatory Day-1 enrollment under Article 6.",
+    "positive_articles": ["L1_Art59", "L3_Art6", "L3_Art42"],
+    "triples": [
+      ["workplace injury recovery", "maps_to_concept", "occupational accident compensation"],
+      ["occupational accident compensation", "governed_by", "L1_Art59"],
+      ["work insurance injury benefit", "governed_by", "L3_Art42"],
+      ["mandatory first-day enrollment", "governed_by", "L3_Art6"]
+    ]
+  },
+  {
+    "qa_id": "QA_005",
+    "domain": "financial",
+    "question": "Our bank advisor sold a complex high-risk investment without explaining downside loss or checking my risk profile. Can I claim compensation?",
+    "answer": "According to Article 9, Article 10, and Article 11 of the Financial Consumer Protection Act, financial institutions must assess customer suitability and disclose material investment risks clearly before contracting, and are liable for resulting damages upon breach.",
+    "positive_articles": ["L4_Art9", "L4_Art10", "L4_Art11"],
+    "triples": [
+      ["unsold risk explanation", "maps_to_concept", "risk disclosure obligation"],
+      ["risk profile check", "maps_to_concept", "KYC suitability assessment"],
+      ["KYC suitability assessment", "governed_by", "L4_Art9"],
+      ["risk disclosure obligation", "governed_by", "L4_Art10"],
+      ["financial consumer damages", "governed_by", "L4_Art11"]
+    ]
+  },
+  {
+    "qa_id": "QA_006",
+    "domain": "labor",
+    "question": "How many days of paid paternity accompaniment leave are employees entitled to when their spouse gives birth?",
+    "answer": "According to Article 15 of the Act of Gender Equality in Employment, employees are entitled to seven days of paid paternity accompaniment leave alongside statutory maternity leave protections.",
+    "positive_articles": ["L2_Art15"],
+    "triples": [
+      ["paternity leave days", "maps_to_concept", "childbirth accompaniment leave"],
+      ["childbirth accompaniment leave", "governed_by", "L2_Art15"]
+    ]
+  }
+]

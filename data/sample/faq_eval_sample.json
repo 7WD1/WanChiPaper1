@@ -1,0 +1,34 @@
+[
+  {
+    "faq_id": "FAQ_001",
+    "domain": "labor",
+    "question": "If an employer lays off staff due to business contraction, what legal basis and notice days apply?",
+    "reference_answer": "Under Article 11 of the Labor Standards Act, business contraction is a statutory ground for termination with advance notice; under Article 16, notice must be 10, 20, or 30 days depending on tenure.",
+    "gold_articles": ["L1_Art11", "L1_Art16"],
+    "is_answerable": true
+  },
+  {
+    "faq_id": "FAQ_002",
+    "domain": "insurance",
+    "question": "Does a small startup with three employees have to enroll workers in occupational accident insurance from day one?",
+    "reference_answer": "Under Article 6 of the Labor Occupational Accident Insurance and Protection Act, mandatory enrollment applies from the first day of employment regardless of employer headcount.",
+    "gold_articles": ["L3_Art6"],
+    "is_answerable": true
+  },
+  {
+    "faq_id": "FAQ_003",
+    "domain": "financial",
+    "question": "What liability arises if a brokerage fails to perform suitability review and risk disclosure before selling derivatives?",
+    "reference_answer": "Under Articles 9, 10, and 11 of the Financial Consumer Protection Act, failing KYC suitability or material risk disclosure triggers statutory compensatory liability unless the firm proves absence of fault.",
+    "gold_articles": ["L4_Art9", "L4_Art10", "L4_Art11"],
+    "is_answerable": true
+  },
+  {
+    "faq_id": "FAQ_004",
+    "domain": "out_of_scope",
+    "question": "What are the maritime salvage rules for international deep-sea shipping vessels under admiralty law?",
+    "reference_answer": "Out of scope: maritime admiralty law is outside the corporate labor, insurance, and financial legal corpus.",
+    "gold_articles": [],
+    "is_answerable": false
+  }
+]

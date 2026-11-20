@@ -1,0 +1,34 @@
+[
+  {
+    "case_id": "Case_001",
+    "title": "Taiwan High Court Civil Judgment 111-Lao-Shang-No. 42",
+    "domain": "labor",
+    "date": "2023-05-18",
+    "cited_articles": ["L1_Art11", "L1_Art16"],
+    "summary": "The court held that even during a probationary period, dismissal requires a demonstrable statutory ground under Article 11(5) of the Labor Standards Act and cannot be exercised arbitrarily at will; advance notice or wages in lieu under Article 16 still applies."
+  },
+  {
+    "case_id": "Case_002",
+    "title": "Supreme Court Civil Judgment 110-Tai-Shang-No. 1825",
+    "domain": "labor",
+    "date": "2022-11-10",
+    "cited_articles": ["L1_Art11", "L1_Art12"],
+    "summary": "Distinguished economic or competency-based termination with severance under Article 11 from summary disciplinary dismissal without notice under Article 12, emphasizing proportionality and ultima ratio."
+  },
+  {
+    "case_id": "Case_003",
+    "title": "Taipei District Court Labor Judgment 112-Lao-Su-No. 109",
+    "domain": "insurance",
+    "date": "2024-02-20",
+    "cited_articles": ["L1_Art59", "L3_Art6", "L3_Art42"],
+    "summary": "Confirmed that an employee injured while commuting directly to work qualifies for occupational accident insurance benefits under Article 42 and employer statutory compensation offset under Article 59 of the Labor Standards Act."
+  },
+  {
+    "case_id": "Case_004",
+    "title": "Taiwan High Court Civil Judgment 112-Jin-Shang-No. 17",
+    "domain": "financial",
+    "date": "2024-01-12",
+    "cited_articles": ["L4_Art9", "L4_Art10", "L4_Art11"],
+    "summary": "Found a wealth management institution liable under Article 11 of the Financial Consumer Protection Act for recommending high-risk structured notes without completing KYC suitability review (Article 9) or plain-language risk disclosure (Article 10)."
+  }
+]

@@ -1,0 +1,103 @@
+# ============================================================================
+# Contrastive Dual-Graph Legal RAG — Default Configuration
+# Matches Table 9 & Table 10 of:
+# "Beyond Flat Legal RAG: Contrastive Dual-Graph Retrieval for
+#  Citation-Grounded Legal Question Answering" (Multimedia Systems)
+# ============================================================================
+
+seed: 42
+
+data:
+  statutes_path: "data/sample/statutes.json"
+  cases_path: "data/sample/cases.json"
+  qa_train_path: "data/sample/qa_train.json"
+  synonyms_path: "data/sample/synonyms.json"
+  faq_eval_path: "data/sample/faq_eval_sample.json"
+  output_dir: "outputs"
+  train_val_ratio: 0.8
+  anti_leakage:
+    ngram_size: 3
+    jaccard_threshold: 0.80        # Stage S2 (Section 5.1)
+    cosine_threshold: 0.85         # Stage S3 (Section 5.1)
+
+basic_kg:
+  domains:
+    - "labor"
+    - "insurance"
+    - "financial"
+  domain_router:
+    use_platt_scaling: true        # SVM + Platt scaling (Section 4.1)
+    svm_c: 1.0
+    min_confidence: 0.35
+
+applied_kg:
+  bm25_top_keywords: 8
+  use_jieba: true
+  use_synonym_expansion: true
+  enforce_statutory_prefix: true   # Answer Revision stage (Section 4.2)
+
+contrastive:
+  encoder_model: "hfl/chinese-roberta-wwm-ext"
+  embedding_dim: 256               # Set 768 for full RoBERTa-base
+  gcn_hidden_dim: 256
+  gcn_num_layers: 2
+  gcn_dropout: 0.1
+  temperature: 0.07                # tau in Eq. (38)
+  lambda_res: 0.01                 # lambda_r in Eq. (45)
+  lambda_smooth: 0.01              # lambda_s in Eq. (46)
+  lambda_align: 0.05               # lambda_a in Eq. (47)
+  lambda_head: 0.001               # lambda_w in Eq. (48)
+  learning_rate: 1.0e-3
+  epochs: 25
+  batch_size: 16
+  freeze_base_gcn: true            # Freeze \tilde{z}_v (Eq. 34)
+
+retrieval:
+  lambda_one_hop: 1.0              # lambda in Eqs. (57)-(58)
+  lambda_multi_hop: 1.0            # lambda_1 in Eq. (65)
+  lambda_contrastive: 1.0          # lambda_2 in Eq. (73)
+  hop_decay: 0.8                   # eta in Eq. (62)
+  max_hops: 2                      # H_max = 2 (Eq. 76)
+  uncertainty_top_m: 20            # M in Eq. (75)
+  uncertainty_temp: 0.1            # tau_u in Eq. (75)
+  uncertainty_threshold: 0.65      # tau_unc in Eq. (76)
+  top_k_cap: 20                    # Balanced cap K=20 (or 25 for peak Acc, Eq. 77)
+  fixed_threshold_fallback: 0.45   # Used only in Exp 2-3 ablation (w/o adaptive theta)
+  constraints:
+    enable_coverage: true
+    delta_cov: 0.55                # Eq. (31)
+    enable_consistency: true
+    epsilon: 0.45                  # Eq. (32)
+    enable_redundancy: true
+    delta_ent: 0.35                # Eq. (33)
+
+llm_sft:
+  base_model: "taide/Llama3-TAIDE-LX-8B-Chat-Alpha1"
+  cutoff_length: 4096              # Table 10
+  learning_rate: 5.0e-5            # Table 10
+  epochs: 40                       # Table 10
+  batch_size: 4                    # Table 10
+  gradient_accumulation_steps: 64  # Table 10
+  lr_scheduler_type: "cosine"      # Table 10
+  max_grad_norm: 1.0               # Table 10
+  lora_rank: 16                    # Table 10
+  lora_alpha: 32
+  lora_dropout: 0.1                # Table 10
+  lora_target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+  fp16: true                       # Table 10
+  max_new_tokens: 512
+  temperature: 0.2
+
+evaluation:
+  alpha_answerability: 0.30        # alpha in Eq. (29)
+  beta_article: 0.40               # beta in Eq. (29)
+  gamma_semantic: 0.30             # gamma in Eq. (29)
+  excluded_lawbench_tasks:
+    - "2-3"
+    - "3-4"
+    - "3-5"
+    - "3-7"

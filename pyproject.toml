@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dual-graph-lqa"
+version = "1.0.0"
+description = "Contrastive Dual-Graph Retrieval-Augmented Generation for Citation-Grounded Legal Question Answering"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Wan-Chi Yang"},
+    {name = "Ming-Juinn Li"},
+    {name = "Diptendu Sinha Roy"},
+    {name = "Chih-Yung Chang", email = "cychang@mail.tku.edu.tw"},
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+    "networkx>=3.1",
+]
+
+[project.optional-dependencies]
+full = [
+    "torch>=2.4.0",
+    "transformers>=4.42.4",
+    "peft>=0.12.0",
+    "accelerate>=0.32.0",
+    "jieba>=0.42.1",
+    "rank-bm25>=0.2.2",
+    "scikit-learn>=1.4.0",
+    "pymupdf>=1.24.0",
+]
+dev = ["pytest>=8.0.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
