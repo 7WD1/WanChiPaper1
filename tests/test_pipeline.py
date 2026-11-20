@@ -1,4 +1,4 @@
-"""Comprehensive unit & integration test suite verifying all modules and Eqs. (1)-(77)."""
+"""Unit and integration tests covering all modules and Eqs. (1)-(77)."""
 
 from __future__ import annotations
 
@@ -24,6 +24,7 @@ from dual_graph_lqa.evaluation import (
     compute_semantic_similarity,
 )
 from dual_graph_lqa.kg import AppliedKGBuilder, BasicKGBuilder, SVMDomainRouter
+from dual_graph_lqa.kg.applied_kg import segment_and_clean
 from dual_graph_lqa.llm import CitationGroundedGenerator, EvidencePromptBuilder
 from dual_graph_lqa.retrieval import (
     AdaptiveDualKGRetriever,
@@ -78,6 +79,12 @@ class TestDualGraphLQAPipeline(unittest.TestCase):
         nbs = self.applied_kg.k_hop_neighbors(some_tid, max_hops=2)
         self.assertTrue(all(1 <= dist <= 2 for dist in nbs.values()))
 
+    def test_chinese_stopwords_filtered_in_segment_and_clean(self) -> None:
+        tokens = segment_and_clean("請問的是否可以解僱勞工與工資了", use_jieba=False)
+        for sw in ("的", "了", "是", "與", "或"):
+            self.assertNotIn(sw, tokens)
+        self.assertTrue(any(tok in tokens for tok in ("解僱", "解", "勞工", "勞", "工資", "工")))
+
     def test_anti_leakage_s1_s2_s3(self) -> None:
         leaked = [
             QAPair("L_S1", "labor", "Unique question?", "Answer", source="lawbench"),
@@ -128,6 +135,46 @@ class TestDualGraphLQAPipeline(unittest.TestCase):
 
         trace_no_cle = self.retriever.retrieve(query, use_contrastive=False, top_k_cap=20)
         self.assertEqual(trace_no_cle.num_contrastive_hits, 0)
+
+        # Verify distinct behavior across the three threshold modes (adaptive, fixed_threshold, fixed_topk)
+        q_ins = self.eval_faqs[1]["question"]
+        t_adapt = self.retriever.retrieve(q_ins, threshold_mode="adaptive", top_k_cap=20)
+        t_fixed = self.retriever.retrieve(q_ins, threshold_mode="fixed_threshold", top_k_cap=20)
+        t_topk = self.retriever.retrieve(q_ins, threshold_mode="fixed_topk", top_k_cap=20)
+        t_legacy = self.retriever.retrieve(q_ins, use_adaptive_threshold=False, top_k_cap=20)
+
+        self.assertEqual(t_adapt.threshold_mode, "adaptive")
+        self.assertEqual(t_fixed.threshold_mode, "fixed_threshold")
+        self.assertEqual(t_topk.threshold_mode, "fixed_topk")
+        self.assertEqual(t_legacy.threshold_mode, "fixed_topk")
+
+        self.assertAlmostEqual(t_fixed.theta_basic, self.cfg.retrieval.fixed_threshold_fallback, places=6)
+        self.assertAlmostEqual(t_fixed.theta_applied, self.cfg.retrieval.fixed_threshold_fallback, places=6)
+        self.assertAlmostEqual(t_fixed.theta_ctr, self.cfg.retrieval.fixed_threshold_fallback, places=6)
+        self.assertNotAlmostEqual(t_adapt.theta_basic, t_fixed.theta_basic, places=3)
+        self.assertEqual(t_topk.theta_basic, 0.0)
+        self.assertEqual(t_topk.num_final_retained, 20)
+        self.assertGreater(t_topk.num_final_retained, t_adapt.num_final_retained)
+        self.assertGreater(t_topk.num_final_retained, t_fixed.num_final_retained)
+
+        # Verify domain router partitions Basic KG retrieval to the routed domain
+        self.assertEqual(trace_full.routed_domain, "labor")
+        basic_hits = [seg for seg in trace_full.evidence if seg.source_type == "basic"]
+        self.assertTrue(all(seg.metadata.get("domain") == "labor" for seg in basic_hits))
+
+        # Verify use_contrastive=False isolates constraint filtering from contrastive node embeddings
+        saved_ctr_vecs = self.retriever._ctr_node_vecs
+        try:
+            self.retriever._ctr_node_vecs = {
+                nid: np.zeros_like(vec) for nid, vec in saved_ctr_vecs.items()
+            }
+            trace_no_cle_isolated = self.retriever.retrieve(query, use_contrastive=False, top_k_cap=20)
+        finally:
+            self.retriever._ctr_node_vecs = saved_ctr_vecs
+        self.assertEqual(
+            [seg.node_id for seg in trace_no_cle.evidence],
+            [seg.node_id for seg in trace_no_cle_isolated.evidence],
+        )
 
         # Flat-text hybrid RAG baseline (Exp 1-3)
         flat = FlatTextHybridRAG(self.trainer.text_encoder)

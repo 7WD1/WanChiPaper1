@@ -14,24 +14,24 @@
 <sup>2</sup>Tamkang University &nbsp;|&nbsp;
 <sup>3</sup>National Institute of Technology Meghalaya
 
-[Architecture](#-architecture-overview) • [Key Results](#-key-experimental-results) • [Equation-to-Code Map](#-paper-equation-to-code-mapping) • [Quickstart](#-quickstart) • [Ablations](#-running-ablation-presets) • [Citation](#-citation)
+[Architecture](#architecture-overview) • [Key Results](#key-experimental-results) • [Equation-to-Code Map](#paper-equation-to-code-mapping) • [Quickstart](#quickstart) • [Ablations](#running-ablation-presets) • [Citation](#citation)
 
 </div>
 
 ---
 
-## ✨ Highlights
+## Overview
 
-Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into **flat text chunks**, destroying law–article hierarchy and cross-references while failing to bridge colloquial user queries with formal statutory provisions. **Contrastive Dual-Graph Legal RAG** resolves these limitations across **labor**, **insurance**, and **financial** law through four tightly coupled modules:
+Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into flat text chunks, which breaks law–article hierarchy and cross-references and makes it harder to connect colloquial questions with formal provisions. This repository implements our contrastive dual-graph RAG framework for labor, insurance, and financial law across four modules:
 
-- **🏛️ Module 1 — Basic Knowledge Graph (`Basic KG`)**: Preserves authoritative law–article star topology ($L_i \to v_{i,j} = (\varphi_{i,j}, \mathrm{Case}_{i,j})$) keeping internal paragraphs/subparagraphs intact alongside linked judicial decisions, routed via an **SVM + Platt scaling** domain classifier.
-- **💬 Module 2 — Applied Knowledge Graph (`Applied KG`)**: Bridges everyday user language and statutory concepts via Jieba segmentation, BM25 keyword extraction, legal synonym expansion $S(\cdot)$, statutory-prefix answer revision, and semantic triple aggregation $\Phi^{\mathrm{text}}$.
-- **🎯 Module 3 — Residual Contrastive Alignment (`GCN + RoBERTa`)**: Freezes pretrained GCN structural vectors $\tilde{z}_v$ and learns regularized node residuals $r_v$ plus a shared linear head $W$ ($\tilde{y}_v = \tilde{z}_v + r_v + W\tilde{z}_v$) under a **multi-positive InfoNCE** objective with residual, graph-smoothness, cross-graph alignment, and head-decay regularizers.
-- **🧭 Uncertainty-Gated Adaptive Retrieval & Evidence-Constrained LoRA SFT**: Decouples query-adaptive similarity thresholding ($\theta(Q) = \mu + \lambda\sigma$) and entropy-gated bounded one-/two-hop expansion ($U(Q)$, $h^*(Q) \in \{1,2\}$) from the **Top-$K$ context budget ceiling**, enforced with **coverage**, **cross-source consistency**, and **entropy redundancy** constraints to fine-tune `LLAMA3-TAIDE-7B`.
+- **Module 1: Basic Knowledge Graph (`Basic KG`)**: Stores authoritative statutes in a law–article star topology ($L_i \to v_{i,j} = (\varphi_{i,j}, \mathrm{Case}_{i,j})$), keeping internal paragraphs and subparagraphs intact alongside linked judicial decisions, with domain routing via SVM and Platt scaling.
+- **Module 2: Applied Knowledge Graph (`Applied KG`)**: Connects everyday user phrasing to statutory concepts using Jieba segmentation, BM25 keyword extraction, legal synonym expansion $S(\cdot)$, statutory-prefix answer revision, and semantic triple aggregation $\Phi^{\mathrm{text}}$.
+- **Module 3: Residual Contrastive Alignment (`GCN + RoBERTa`)**: Keeps pretrained GCN structural embeddings $\tilde{z}_v$ frozen while learning regularized node residuals $r_v$ and a shared linear head $W$ ($\tilde{y}_v = \tilde{z}_v + r_v + W\tilde{z}_v$) under a multi-positive InfoNCE objective with residual, graph-smoothness, cross-graph alignment, and head-decay regularizers.
+- **Module 4: LLM Fine-Tuning & Adaptive Multi-KG Retrieval**: Fine-tunes `LLAMA3-TAIDE-7B` with LoRA on multi-source evidence under coverage, cross-source consistency, and entropy redundancy constraints, and separates per-query similarity thresholding ($\theta(Q) = \mu + \lambda\sigma$) and entropy-gated one-/two-hop expansion ($U(Q)$, $h^*(Q) \in \{1,2\}$) from the Top-$K$ context budget cap.
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 <div align="center">
   <img src="assets/architecture_overview.png" width="96%" alt="Contrastive Dual-Graph Legal RAG Overview"/>
@@ -39,7 +39,7 @@ Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into **f
 </div>
 
 <details>
-<summary><b>🔍 Expand Detailed Diagrams: Residual Contrastive Module (Fig. 4) & Inference Pipeline (Fig. 6)</b></summary>
+<summary><b>Expand Detailed Diagrams: Residual Contrastive Module (Fig. 4) &amp; Inference Pipeline (Fig. 6)</b></summary>
 <br/>
 <div align="center">
   <img src="assets/contrastive_module.png" width="92%" alt="GCN + RoBERTa Residual Contrastive Module"/>
@@ -52,7 +52,7 @@ Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into **f
 
 ---
 
-## 📊 Key Experimental Results
+## Key Experimental Results
 
 ### 1. Matched-Backbone Progression & Fine-Grained Ablation (`LLAMA3-TAIDE-7B`)
 
@@ -75,15 +75,24 @@ Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into **f
   <img src="assets/controlled_ablation.png" width="96%" alt="Matched-Backbone and Component Ablation Results"/>
 </div>
 
-### 2. Unified-Protocol External Reruns & Adaptive Budget Decoupling
+### 2. Unified-Protocol External Baseline Reruns (16-Task LawBench Subset)
 
-| Unified-Protocol External Baseline (Same 16-Task Subset) | LawBench Mean | | Adaptive Thresholding vs. Fixed Top-K=20 (FAQ) | Avg. Nodes | FAQ Acc | FAQ Exp |
-| :--- | :---: | :---: | :--- | :---: | :---: | :---: |
-| `Exp 3-1` GPT-4 (Zero-shot, Same Subset) | 45.95 | | `Exp 4-1` Fixed Top-$K$=20 (w/o Adaptive $\theta(Q)$) | 20.0 | 76.50% | 72.10% |
-| `Exp 1-3` LLAMA3-TAIDE-7B + Flat-Text RAG | 61.80 | | **`Exp 4-2` Adaptive $\theta(Q)$ + Top-$K$=20 Cap (Ours)** | **13.4** | **78.84%** | **75.64%** |
-| `Exp 3-3` InternLM-Law (Rerun, Same Protocol) | 63.80 | | *(33.0% fewer prompt nodes: ~8 simple / ~19 multi-hop)* | **-33.0%** | **+2.34 pp** | **+3.54 pp** |
-| `Exp 3-2` GPT-4 + Flat-Text RAG (Matched Access) | 64.20 | | | | | |
-| **`Full` Ours (`LLAMA3-TAIDE-7B` + Dual-KG + CLE)** | **69.69** | | | | | |
+| Exp ID | Model | Evaluation Protocol | LawBench Mean |
+| :--- | :--- | :--- | :---: |
+| `Exp 3-1` | GPT-4 (Zero-shot, Same Subset) | Zero-shot inference rerun on the 16-task filtered subset | 45.95 |
+| `Exp 1-3` | LLAMA3-TAIDE-7B + Flat-Text RAG | Same 7B backbone + flat-chunk hybrid retrieval (Dense + BM25 + Rerank) | 61.80 |
+| `Exp 3-3` | InternLM-Law (Rerun, Same Protocol) | Rerun on the same 16-task subset and output parser (vs. published 64.60) | 63.80 |
+| `Exp 3-2` | GPT-4 + Flat-Text RAG (Matched Access) | GPT-4 given matched access to the same statute and case corpus | 64.20 |
+| **`Full`** | **Ours (`LLAMA3-TAIDE-7B` + Dual-KG + CLE + SFT)** | **Complete framework on the same 16-task subset** | **69.69** |
+
+### 3. Adaptive Thresholding vs. Fixed Top-K=20 (Real-World FAQ)
+
+| Exp ID | Retrieval Strategy | Avg. Retained Nodes / Query | FAQ Acc | FAQ Exp |
+| :--- | :--- | :---: | :---: | :---: |
+| `Exp 4-1` | Fixed Top-$K$=20 (w/o Adaptive $\theta(Q)$) | 20.0 | 76.50% | 72.10% |
+| **`Exp 4-2`** | **Adaptive $\theta(Q)$ + Top-$K$=20 Cap (Ours)** | **13.4** (~8 simple / ~19 complex multi-hop) | **78.84%** (+2.34 pp) | **75.64%** (+3.54 pp) |
+
+Adaptive thresholding retains 33.0% fewer prompt nodes on average than fixed Top-$K=20$ while raising FAQ Accuracy by +2.34 pp and FAQ Explainability by +3.54 pp.
 
 <div align="center">
   <img src="assets/external_and_adaptive.png" width="96%" alt="External Baseline Reruns and Adaptive Budget Decoupling"/>
@@ -91,24 +100,24 @@ Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into **f
 
 ---
 
-## 🗺️ Paper Equation-to-Code Mapping
+## Paper Equation-to-Code Mapping
 
 | Paper Section / Equations | Algorithm / Component | Implementation File |
 | :--- | :--- | :--- |
-| Sec. 3.1–3.3, Eqs. (1)–(30) | Answerability F1, Article-level F1, Semantic $\rho$, Joint $P_M$ | [`src/dual_graph_lqa/evaluation/metrics.py`](src/dual_graph_lqa/evaluation/metrics.py) |
+| Sec. 3.1–3.4, Eqs. (1)–(30) | Answerability F1, Article-level F1, Semantic $\rho$, Joint $P_M$ | [`src/dual_graph_lqa/evaluation/metrics.py`](src/dual_graph_lqa/evaluation/metrics.py) |
 | Sec. 3.4 & 4.4, Eqs. (31)–(33) | Coverage ($\delta_{\mathrm{cov}}$), Cross-Source Consistency ($\epsilon$), Redundancy ($\delta_{\mathrm{ent}}$) | [`src/dual_graph_lqa/retrieval/constraints.py`](src/dual_graph_lqa/retrieval/constraints.py) |
 | Sec. 4.1, Algorithm 1 (Table 2) | Basic KG Construction + SVM & Platt Scaling Domain Router | [`src/dual_graph_lqa/kg/basic_kg.py`](src/dual_graph_lqa/kg/basic_kg.py), [`domain_router.py`](src/dual_graph_lqa/kg/domain_router.py) |
 | Sec. 4.2, Algorithm 2 (Table 3) | Applied KG (Jieba, BM25, Synonym Expansion, Answer Revision, Triples) | [`src/dual_graph_lqa/kg/applied_kg.py`](src/dual_graph_lqa/kg/applied_kg.py) |
 | Sec. 4.3, Algorithm 3 (Table 4), Eqs. (34)–(49) | Frozen GCN + RoBERTa Residual Contrastive Alignment (Multi-Positive InfoNCE) | [`src/dual_graph_lqa/contrastive/residual_alignment.py`](src/dual_graph_lqa/contrastive/residual_alignment.py), [`gcn_encoder.py`](src/dual_graph_lqa/contrastive/gcn_encoder.py) |
 | Sec. 4.4, Algorithm 4 (Table 5), Eq. (50) | Evidence Prompt Assembly & `LLAMA3-TAIDE-7B` LoRA SFT (Table 10) | [`src/dual_graph_lqa/llm/sft_trainer.py`](src/dual_graph_lqa/llm/sft_trainer.py), [`prompt_builder.py`](src/dual_graph_lqa/llm/prompt_builder.py) |
 | Sec. 4.5, Algorithm 5 (Table 6), Eqs. (51)–(77) | Adaptive Thresholding, Entropy $U(Q)$, Bounded Stopping $h^*(Q)$, Top-$K$ Cap | [`src/dual_graph_lqa/retrieval/adaptive_retriever.py`](src/dual_graph_lqa/retrieval/adaptive_retriever.py) |
-| Sec. 5.1, Safeguards S1–S4 | 4-Stage Anti-Leakage Deduplication & Paraphrase Quarantine | [`src/dual_graph_lqa/data/anti_leakage.py`](src/dual_graph_lqa/data/anti_leakage.py) |
+| Sec. 5.1, Safeguards S1–S4 | 4-Stage Anti-Leakage Deduplication & Paraphrase Filtering | [`src/dual_graph_lqa/data/anti_leakage.py`](src/dual_graph_lqa/data/anti_leakage.py) |
 | Sec. 5.3.1 & 5.3.3 (Exp 1-3, Exp 3-2) | Strong Flat-Text Hybrid RAG Baseline (Dense + BM25 + RRF Rerank) | [`src/dual_graph_lqa/retrieval/flat_rag_baseline.py`](src/dual_graph_lqa/retrieval/flat_rag_baseline.py) |
-| Sec. 5.3.2 & 5.3.3 (Tables 7 & 13) | 16-Task LawBench Adapter & 6-Level FAQ Rubric Judge | [`src/dual_graph_lqa/evaluation/lawbench_adapter.py`](src/dual_graph_lqa/evaluation/lawbench_adapter.py), [`faq_rubric_judge.py`](src/dual_graph_lqa/evaluation/faq_rubric_judge.py) |
+| Sec. 5.1 & 5.3.2 (Tables 7 & 13) | 16-Task LawBench Adapter & 6-Level FAQ Rubric Judge | [`src/dual_graph_lqa/evaluation/lawbench_adapter.py`](src/dual_graph_lqa/evaluation/lawbench_adapter.py), [`faq_rubric_judge.py`](src/dual_graph_lqa/evaluation/faq_rubric_judge.py) |
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
 ### 1. Installation
 
@@ -116,17 +125,17 @@ Conventional legal Retrieval-Augmented Generation (RAG) splits statutes into **f
 git clone https://github.com/7WD1/WanChiPaper1.git
 cd WanChiPaper1
 
-# Lightweight CPU smoke-test environment (runs full architecture end-to-end)
+# Lightweight CPU smoke-test environment (runs the full pipeline on the sample corpus)
 pip install numpy pyyaml networkx
 
 # Full GPU training & inference environment (CUDA 12.1, LLAMA3-TAIDE-7B + RoBERTa + LoRA)
 pip install -r requirements.txt
 ```
 
-### 2. Run the End-to-End Pipeline (Works Out-of-the-Box on Included Sample Legal Corpus)
+### 2. End-to-End Pipeline (Sample Legal Corpus)
 
 ```bash
-# Step 1: Anti-leakage audit (S1-S4) + Build Basic KG, Applied KG & SVM+Platt Router
+# Step 1: Anti-leakage check (S1-S4) + Build Basic KG, Applied KG & SVM+Platt Router
 python scripts/build_dual_kg.py --config configs/default.yaml
 
 # Step 2: Train GCN + Residual Contrastive Alignment (Module 3, Eqs. 34-49)
@@ -146,13 +155,13 @@ python scripts/run_inference.py \
 python scripts/run_evaluation.py --config configs/default.yaml
 ```
 
-> **GPU Production Run:** Pass `--use-pretrained-roberta` to `train_contrastive.py`, `--run-training` to `train_llm_sft.py`, and `--use-hf-llm --adapter-path outputs/llama3_taide_lora/lora_adapter` to `run_inference.py` to execute full training and inference on `LLAMA3-TAIDE-7B` + `hfl/chinese-roberta-wwm-ext` matching Table 9 & Table 10.
+> **Full GPU Training & Inference:** Pass `--use-pretrained-roberta` to `train_contrastive.py`, `--run-training` to `train_llm_sft.py`, and `--use-hf-llm --adapter-path outputs/llama3_taide_lora/lora_adapter` to `run_inference.py` to run full training and inference with `LLAMA3-TAIDE-7B` (`taide/Llama3-TAIDE-LX-8B-Chat-Alpha1`) and `hfl/chinese-roberta-wwm-ext` matching Tables 9 and 10.
 
 ---
 
-## 🧪 Running Ablation Presets
+## Running Ablation Presets
 
-`scripts/run_inference.py` includes built-in presets matching every experimental variant in **Tables 11, 12, and 14**:
+`scripts/run_inference.py` provides presets for the experimental configurations in **Tables 11, 12, and 14**:
 
 ```bash
 # Module 1: Matched-Backbone & Flat-Text RAG Baselines
@@ -173,7 +182,7 @@ python scripts/run_inference.py --preset fixed_topk --top-k 20  # Exp 4-1: Fixed
 python scripts/run_inference.py --preset full       --top-k 20  # Exp 4-2: Adaptive theta(Q) + Top-K = 20 Cap
 ```
 
-### Verify Installation with Automated Tests
+### Automated Tests
 
 ```bash
 python -m unittest discover -s tests -v
@@ -181,22 +190,22 @@ python -m unittest discover -s tests -v
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 WanChiPaper1/
-├── assets/                          # Architecture diagrams & controlled ablation plots
+├── assets/                          # Architecture diagrams & ablation plots
 ├── configs/
-│   └── default.yaml                 # Exact hyperparameters matching Table 10
+│   └── default.yaml                 # Hyperparameters matching Table 10
 ├── data/
-│   ├── README.md                    # Dataset provenance, LawBench & MOJ FAQ preparation, S1-S4 guide
+│   ├── README.md                    # Dataset sources, LawBench & MOJ FAQ preparation, S1-S4 guide
 │   └── sample/                      # Runnable multi-domain legal sample corpus (labor, insurance, financial)
 ├── scripts/
 │   ├── build_dual_kg.py             # Step 1: Anti-leakage filter + Basic KG + Applied KG + SVM Router
 │   ├── train_contrastive.py         # Step 2: GCN + RoBERTa residual contrastive alignment
 │   ├── train_llm_sft.py             # Step 3: Constraint-verified SFT export & LLAMA3-TAIDE-7B LoRA SFT
-│   ├── run_inference.py             # Step 4: Inference CLI with all Module 1/2/4 ablation presets
-│   └── run_evaluation.py            # Step 5: Section 3 metrics, FAQ rubric & budget decoupling audit
+│   ├── run_inference.py             # Step 4: Inference CLI with Module 1/2/4 ablation presets
+│   └── run_evaluation.py            # Step 5: Section 3 metrics, FAQ rubric & budget comparison
 ├── src/dual_graph_lqa/
 │   ├── config.py                    # Typed YAML configuration loader
 │   ├── data/                        # Schemas & 4-stage anti-leakage deduplicator (S1-S4)
@@ -206,7 +215,7 @@ WanChiPaper1/
 │   ├── llm/                         # Prompt builder, LoRA SFT trainer, citation-grounded generator
 │   └── evaluation/                  # Section 3 metrics (Eqs. 1-29), LawBench 16-task & FAQ rubric judge
 ├── tests/
-│   └── test_pipeline.py             # Unit & integration tests verifying every module & Eqs. (1)-(77)
+│   └── test_pipeline.py             # Unit and integration tests for all modules and Eqs. (1)-(77)
 ├── pyproject.toml
 ├── requirements.txt
 └── LICENSE
@@ -214,9 +223,9 @@ WanChiPaper1/
 
 ---
 
-## 📖 Citation
+## Citation
 
-If you find this framework or codebase useful in your research, please cite our paper:
+If you use this codebase in your research, please cite:
 
 ```bibtex
 @article{yang2026beyondflatlegalrag,
@@ -228,8 +237,8 @@ If you find this framework or codebase useful in your research, please cite our 
 }
 ```
 
-## 📬 Contact & Data Availability
+## Contact & Data Availability
 
 - **Corresponding Author:** Prof. Chih-Yung Chang (`cychang@mail.tku.edu.tw`)
 - **Public Benchmarks:** [LawBench](https://github.com/open-compass/LawBench/) and [MOJ Laws & Regulations Database](https://law.moj.gov.tw)
-- **Proprietary Corporate QA ($D^{\mathrm{QA}}$):** Governed by enterprise NDAs; available from the corresponding author upon reasonable request subject to data provider permission.
+- **Proprietary Corporate QA ($D^{\mathrm{QA}}$):** Restricted under confidentiality agreements; available from the corresponding author upon reasonable request subject to data provider permission.

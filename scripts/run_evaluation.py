@@ -32,7 +32,7 @@ def evaluate_strategy(
     generator: CitationGroundedGenerator,
     eval_items: list,
     universe_articles: set,
-    use_adaptive: bool,
+    threshold_mode: str,
     top_k: int,
     alpha: float,
     beta: float,
@@ -47,7 +47,7 @@ def evaluate_strategy(
     for item in eval_items:
         trace = retriever.retrieve(
             item["question"],
-            use_adaptive_threshold=use_adaptive,
+            threshold_mode=threshold_mode,
             top_k_cap=top_k,
         )
         out = generator.generate(item["question"], trace.evidence)
@@ -129,13 +129,16 @@ def main() -> None:
     generator = CitationGroundedGenerator(cfg=cfg.llm_sft, use_hf_model=False)
     universe = set(basic_kg.articles.keys())
 
-    for label, adapt in [("Exp 4-1 Fixed Top-K=20", False), ("Exp 4-2 Adaptive theta(Q) + Top-K=20 Cap", True)]:
+    for label, mode in [
+        ("Exp 4-1 Fixed Top-K=20", "fixed_topk"),
+        ("Exp 4-2 Adaptive theta(Q) + Top-K=20 Cap", "adaptive"),
+    ]:
         res = evaluate_strategy(
             retriever,
             generator,
             eval_items,
             universe,
-            use_adaptive=adapt,
+            threshold_mode=mode,
             top_k=cfg.retrieval.top_k_cap,
             alpha=cfg.evaluation.alpha_answerability,
             beta=cfg.evaluation.beta_article,

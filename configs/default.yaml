@@ -1,5 +1,5 @@
 # ============================================================================
-# Contrastive Dual-Graph Legal RAG — Default Configuration
+# Contrastive Dual-Graph Legal RAG: Default Configuration
 # Matches Table 9 & Table 10 of:
 # "Beyond Flat Legal RAG: Contrastive Dual-Graph Retrieval for
 #  Citation-Grounded Legal Question Answering" (Multimedia Systems)
@@ -72,7 +72,7 @@ retrieval:
     delta_ent: 0.35                # Eq. (33)
 
 llm_sft:
-  base_model: "taide/Llama3-TAIDE-LX-8B-Chat-Alpha1"
+  base_model: "taide/Llama3-TAIDE-LX-8B-Chat-Alpha1"  # TAIDE Llama-3 checkpoint denoted LLAMA3-TAIDE-7B in the paper
   cutoff_length: 4096              # Table 10
   learning_rate: 5.0e-5            # Table 10
   epochs: 40                       # Table 10

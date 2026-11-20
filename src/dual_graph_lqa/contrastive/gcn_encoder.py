@@ -115,7 +115,7 @@ class TextEncoder:
 
 
 class GCNEncoder:
-    """Multi-layer Graph Convolutional Encoder producing frozen base vectors \tilde{z}_v."""
+    r"""Multi-layer Graph Convolutional Encoder producing frozen base vectors \tilde{z}_v."""
 
     def __init__(
         self,
@@ -143,7 +143,7 @@ class GCNEncoder:
             self.weights.append(w)
 
     def encode_graph(self, node_features: np.ndarray, norm_adj: np.ndarray) -> np.ndarray:
-        """Propagate RoBERTa node features over dual-KG topology -> frozen \tilde{z}_v."""
+        r"""Propagate RoBERTa node features over dual-KG topology -> frozen \tilde{z}_v."""
         h = node_features.astype(np.float32)
         for l_idx, w in enumerate(self.weights):
             h_prop = norm_adj @ h @ w

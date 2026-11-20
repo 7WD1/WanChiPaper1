@@ -22,17 +22,17 @@ from dual_graph_lqa.llm import CitationGroundedGenerator
 from dual_graph_lqa.retrieval import AdaptiveDualKGRetriever, FlatTextHybridRAG
 
 PRESETS = {
-    "full": dict(bkg=True, akg=True, cle=True, res=True, mh=True, adapt=True, cons=True, cross=True),
+    "full": dict(bkg=True, akg=True, cle=True, res=True, mh=True, mode="adaptive", cons=True, cross=True),
     "flat_rag": dict(flat=True),
-    "bkg_only": dict(bkg=True, akg=False, cle=False, res=True, mh=False, adapt=True, cons=True, cross=True),
-    "akg_only": dict(bkg=False, akg=True, cle=False, res=True, mh=True, adapt=True, cons=True, cross=True),
-    "dual_kg_no_cle": dict(bkg=True, akg=True, cle=False, res=True, mh=True, adapt=True, cons=True, cross=True),
-    "no_residual": dict(bkg=True, akg=True, cle=True, res=False, mh=True, adapt=True, cons=True, cross=True),
-    "no_multihop": dict(bkg=True, akg=True, cle=True, res=True, mh=False, adapt=True, cons=True, cross=True),
-    "fixed_threshold": dict(bkg=True, akg=True, cle=True, res=True, mh=True, adapt=False, cons=True, cross=True),
-    "no_constraints": dict(bkg=True, akg=True, cle=True, res=True, mh=True, adapt=True, cons=False, cross=False),
-    "no_consistency": dict(bkg=True, akg=True, cle=True, res=True, mh=True, adapt=True, cons=True, cross=False),
-    "fixed_topk": dict(bkg=True, akg=True, cle=True, res=True, mh=True, adapt=False, cons=True, cross=True),
+    "bkg_only": dict(bkg=True, akg=False, cle=False, res=True, mh=False, mode="adaptive", cons=True, cross=True),
+    "akg_only": dict(bkg=False, akg=True, cle=False, res=True, mh=True, mode="adaptive", cons=True, cross=True),
+    "dual_kg_no_cle": dict(bkg=True, akg=True, cle=False, res=True, mh=True, mode="adaptive", cons=True, cross=True),
+    "no_residual": dict(bkg=True, akg=True, cle=True, res=False, mh=True, mode="adaptive", cons=True, cross=True),
+    "no_multihop": dict(bkg=True, akg=True, cle=True, res=True, mh=False, mode="adaptive", cons=True, cross=True),
+    "fixed_threshold": dict(bkg=True, akg=True, cle=True, res=True, mh=True, mode="fixed_threshold", cons=True, cross=True),
+    "no_constraints": dict(bkg=True, akg=True, cle=True, res=True, mh=True, mode="adaptive", cons=False, cross=False),
+    "no_consistency": dict(bkg=True, akg=True, cle=True, res=True, mh=True, mode="adaptive", cons=True, cross=False),
+    "fixed_topk": dict(bkg=True, akg=True, cle=True, res=True, mh=True, mode="fixed_topk", cons=True, cross=True),
 }
 
 
@@ -100,13 +100,13 @@ def main() -> None:
         use_applied_kg=bool(preset["akg"]),
         use_contrastive=bool(preset["cle"]),
         use_multihop=bool(preset["mh"]),
-        use_adaptive_threshold=bool(preset["adapt"]),
+        threshold_mode=str(preset["mode"]),
         use_constraints=bool(preset["cons"]),
         top_k_cap=k_cap,
     )
     result = generator.generate(args.query, trace.evidence)
 
-    print(f"=== Preset: {args.preset} | Top-K Cap: {k_cap} ===")
+    print(f"=== Preset: {args.preset} (mode={trace.threshold_mode}) | Top-K Cap: {k_cap} ===")
     print(f"Routed Domain : {trace.routed_domain} ({trace.domain_probs})")
     print(
         f"Uncertainty U : {trace.uncertainty_u:.4f} (gate={cfg.retrieval.uncertainty_threshold}) -> "

@@ -43,7 +43,11 @@ def segment_and_clean(text: str, use_jieba: bool = True, stopwords: Set[str] = D
     else:
         raw_tokens = re.findall(r"[a-zA-Z0-9_]+|[\u4e00-\u9fff]{1,2}", text)
     cleaned = [tok.strip().lower() for tok in raw_tokens if tok.strip()]
-    return [tok for tok in cleaned if tok not in stopwords and len(tok) > 1 or re.match(r"[\u4e00-\u9fff]", tok)]
+    return [
+        tok
+        for tok in cleaned
+        if tok not in stopwords and (len(tok) > 1 or bool(re.match(r"[\u4e00-\u9fff]", tok)))
+    ]
 
 
 class BM25KeywordExtractor:
